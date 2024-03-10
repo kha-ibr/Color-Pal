@@ -2,6 +2,15 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="ColorPaletteCardPrev">
+        <State />
+      </entry>
+      <entry key="ColorPalettePrev">
+        <State />
+      </entry>
+      <entry key="MainActivity">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
