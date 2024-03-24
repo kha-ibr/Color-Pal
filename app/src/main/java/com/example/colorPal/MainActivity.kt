@@ -8,14 +8,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.colorPal.ui.screens.generate.ColorPaletteGeneratorScreen
-import com.example.compose.ColorPalTheme
+import com.example.colorPal.ui.theme.ColorPalTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            ColorPalTheme {
-                // A surface container using the 'background' color from the theme
+            ColorPalTheme(
+                useDarkTheme = false
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
