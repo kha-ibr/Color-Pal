@@ -2,6 +2,18 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+<<<<<<< HEAD
+=======
+      <entry key="BottomSheetPreview">
+        <State />
+      </entry>
+      <entry key="ColorPaletteCardPrev">
+        <State />
+      </entry>
+      <entry key="ColorPalettePrev">
+        <State />
+      </entry>
+>>>>>>> feat/color-palette-container
       <entry key="MainActivity">
         <State />
       </entry>
