@@ -41,7 +41,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -70,9 +69,6 @@ fun ColorPaletteGeneratorScreen(
 ) {
     val padding = 16.dp
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
-    var emptyStringList: MutableList<String> = remember {
-        mutableStateListOf<String>()
-    }
 
     var cardId by remember { mutableIntStateOf(0) }
     var isSheetPaletteItemsVisible by remember { mutableStateOf(false) }
@@ -162,7 +158,7 @@ fun ColorPaletteGeneratorScreen(
                     viewModel.copyColorCode(cardId, clipboardManager)
                     isSheetPaletteItemsVisible = false
                     scope.launch {
-                        snackBarHostState.showSnackbar("Snackbar")
+                        snackBarHostState.showSnackbar("Color code copied")
                     }
                 }
             }
