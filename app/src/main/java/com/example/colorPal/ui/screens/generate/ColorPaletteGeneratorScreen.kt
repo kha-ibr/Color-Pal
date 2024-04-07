@@ -1,5 +1,6 @@
 package com.example.colorPal.ui.screens.generate
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.outlined.ChangeCircle
 import androidx.compose.material.icons.outlined.Image
@@ -32,6 +34,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -39,30 +43,41 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.colorPal.ui.composable.bottomSheet.BottomSheet
 import com.example.colorPal.ui.composable.bottomSheet.BottomSheetModel
+import kotlinx.coroutines.launch
 
 
 const val TAG: String = "ColorPaletteGeneratorScreen"
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorPaletteGeneratorScreen() {
-
-    val numberOfCards by remember { mutableIntStateOf(4) }
+fun ColorPaletteGeneratorScreen(
+    viewModel: ColorGeneratorViewModel = viewModel()
+) {
     val padding = 16.dp
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
+    var cardId by remember { mutableIntStateOf(0) }
     var isSheetPaletteItemsVisible by remember { mutableStateOf(false) }
     var isMoreOptionSheetVisible by remember { mutableStateOf(false) }
     var isColorHarSheetVisible by remember { mutableStateOf(false) }
     var isExportSheetVisible by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     val sheetCardPaletteItems = listOf(
         BottomSheetModel(
@@ -127,11 +142,25 @@ fun ColorPaletteGeneratorScreen() {
     )
 
     if (isSheetPaletteItemsVisible) {
-        BottomSheet(items = sheetCardPaletteItems, onItemClick = { index ->
-            when (index) {
-                0 -> Log.d(TAG, "Add Card Clicked")
-                1 -> Log.d(TAG, "Remove Card Clicked")
-                2 -> Log.d(TAG, "Copy Card Clicked")
+        BottomSheet(items = sheetCardPaletteItems, onItemClick = {
+            when (it) {
+                0 -> {
+                    viewModel.addCard()
+                    isSheetPaletteItemsVisible = false
+                }
+
+                1 -> {
+                    viewModel.removeCard(cardId)
+                    isSheetPaletteItemsVisible = false
+                }
+
+                2 -> {
+                    viewModel.copyColorCode(cardId, clipboardManager)
+                    isSheetPaletteItemsVisible = false
+                    scope.launch {
+                        snackBarHostState.showSnackbar("Color code copied")
+                    }
+                }
             }
         }, onDismissSheet = { isSheetPaletteItemsVisible = false })
     }
@@ -180,23 +209,27 @@ fun ColorPaletteGeneratorScreen() {
         BottomAppBar {
             Text(text = "bottom bar")
         }
-    }, content = { it ->
+    },snackbarHost = {
+        SnackbarHost(hostState = snackBarHostState)
+    }, content = {
         Column(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
-            repeat(5) {
-                ColorPaletteCard(text = "Blue",
-                    color = Color.Blue,
+            viewModel.colorStates.forEachIndexed { index, colorState ->
+                ColorPaletteCard(
                     modifier = Modifier.weight(1f),
+                    colorCardState = colorState,
                     onCardClick = {
                         isSheetPaletteItemsVisible = true
+                        cardId = colorState.id
+                        Log.d(TAG, "Card ID: ${colorState.id}")
                     },
-                    onLockClick = {
-                        Log.d(TAG, "Lock Clicked")
-                    })
-                if (it <= numberOfCards - 1) // Remove spacing on the last card
+                    onCardLock = { clickedId -> viewModel.toggleLock(clickedId) }
+                )
+                // Remove spacing on the last card
+                if (index <= viewModel.colorStates.size - 1)
                     Spacer(modifier = Modifier.height(10.dp))
             }
 
@@ -210,7 +243,17 @@ fun ColorPaletteGeneratorScreen() {
             ) {
                 Button(
                     onClick = {
+                        viewModel.colorStates.forEach { colorState ->
+                            if (!colorState.isLocked) {
+                                val newColor = Color(
+                                    (0..255).random(),
+                                    (0..255).random(),
+                                    (0..255).random()
+                                )
 
+                                viewModel.updateColor(colorState.id, newColor)
+                            }
+                        }
                     }, modifier = Modifier
                         .fillMaxWidth(.9f)
                         .padding(end = 10.dp)
@@ -225,17 +268,15 @@ fun ColorPaletteGeneratorScreen() {
         }
 
     })
-
 }
 
 @Composable
 fun ColorPaletteCard(
     modifier: Modifier = Modifier,
-    text: String,
-    color: Color,
     cardShape: Shape = RoundedCornerShape(8.dp),
+    colorCardState: ColorCardState,
     onCardClick: () -> Unit,
-    onLockClick: () -> Unit
+    onCardLock: (Int) -> Unit
 ) {
     val padding = 16.dp
 
@@ -244,32 +285,36 @@ fun ColorPaletteCard(
             .fillMaxWidth()
             .padding(start = padding, end = padding)
             .clickable { onCardClick() }
-            .background(color, shape = cardShape)
+            .background(colorCardState.color, shape = cardShape)
             .padding(padding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = text,
+            text = colorCardState.text,
             style = MaterialTheme.typography.bodyLarge,
             color = Color.White,
         )
 
-        IconButton(onClick = { onLockClick() }) {
+        IconButton(onClick = { onCardLock(colorCardState.id) }) {
+            val icon = if (colorCardState.isLocked) Icons.Default.Lock else Icons.Default.LockOpen
+
             Icon(
-                imageVector = Icons.Default.LockOpen,
-                contentDescription = "Lock Palette",
+                imageVector = icon,
+                contentDescription = if (colorCardState.isLocked) "Unlock Palette" else "Lock Palette",
                 tint = Color(255, 255, 255).copy(alpha = .6f),
                 modifier = Modifier.size(24.dp)
             )
         }
     }
+
 }
 
 
 @Preview
 @Composable
 fun ColorPaletteGeneratorScreenPreview() {
-    ColorPaletteGeneratorScreen()
-}
+    val viewModel = viewModel<ColorGeneratorViewModel>()
 
+    ColorPaletteGeneratorScreen(viewModel)
+}

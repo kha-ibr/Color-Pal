@@ -69,7 +69,6 @@ fun BottomSheet(
                             )
                         }
                     }
-
                 }
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
             }
