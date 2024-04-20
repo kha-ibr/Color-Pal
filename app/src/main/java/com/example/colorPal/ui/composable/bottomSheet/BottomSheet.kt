@@ -1,6 +1,5 @@
 package com.example.colorPal.ui.composable.bottomSheet
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,17 +27,19 @@ import androidx.compose.ui.unit.dp
 fun BottomSheet(
     items: List<BottomSheetModel>,
     onItemClick: (Int) -> Unit,
-    onDismissSheet: () -> Unit
-) {
+    onDismissSheet: () -> Unit,
+    ) {
     val padding = 16.dp
     val buttonTextPadding = 5.dp
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
-        sheetState = sheetState,
-        dragHandle = null,
-        content = {
-            Column(modifier = Modifier.fillMaxWidth().padding(padding)) {
+        sheetState = sheetState, dragHandle = null, content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(padding)
+            ) {
                 items.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier
@@ -46,7 +47,6 @@ fun BottomSheet(
                             .height(50.dp)
                             .clickable {
                                 onItemClick(index)
-                                Log.d("BottomSheet", "Index: $index, Item: ${item.text}")
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
