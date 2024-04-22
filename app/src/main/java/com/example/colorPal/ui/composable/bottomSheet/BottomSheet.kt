@@ -28,50 +28,62 @@ fun BottomSheet(
     items: List<BottomSheetModel>,
     onItemClick: (Int) -> Unit,
     onDismissSheet: () -> Unit,
-    ) {
+) {
     val padding = 16.dp
-    val buttonTextPadding = 5.dp
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
-        sheetState = sheetState, dragHandle = null, content = {
+        sheetState = sheetState,
+        dragHandle = null,
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(padding)
             ) {
                 items.forEachIndexed { index, item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .clickable {
-                                onItemClick(index)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (item.icon != null) {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.contentDescription,
-                                    modifier = Modifier.padding(end = buttonTextPadding)
-                                )
-                            }
-                            Text(text = item.text)
-                        }
-
-                        if (item.secondaryIcon != null) {
-                            Icon(
-                                imageVector = item.secondaryIcon,
-                                contentDescription = item.contentDescription
-                            )
-                        }
-                    }
+                    BottomSheetItem(item = item, index, onItemClick = onItemClick)
                 }
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
             }
-        }, onDismissRequest = onDismissSheet
+        },
+        onDismissRequest = onDismissSheet
     )
+}
+
+@Composable
+fun BottomSheetItem(
+    item: BottomSheetModel,
+    index: Int,
+    onItemClick: (Int) -> Unit,
+) {
+    val buttonTextPadding = 5.dp
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable {
+                onItemClick(index)
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (item.icon != null) {
+                Icon(
+                    imageVector = item.icon,
+                    contentDescription = item.contentDescription,
+                    modifier = Modifier.padding(end = buttonTextPadding)
+                )
+            }
+            Text(text = item.text)
+        }
+
+        if (item.secondaryIcon != null) {
+            Icon(
+                imageVector = item.secondaryIcon,
+                contentDescription = item.contentDescription
+            )
+        }
+    }
 }

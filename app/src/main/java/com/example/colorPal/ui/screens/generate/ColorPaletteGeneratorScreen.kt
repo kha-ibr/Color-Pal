@@ -2,7 +2,6 @@ package com.example.colorPal.ui.screens.generate
 
 import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,19 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.FileDownload
-import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CopyAll
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -76,98 +71,9 @@ fun ColorPaletteGeneratorScreen(
     var maxCardDisplayed by remember { mutableIntStateOf(3) }
 
     var isSheetPaletteItemsVisible by remember { mutableStateOf(false) }
-    var isMoreOptionSheetVisible by remember { mutableStateOf(false) }
-    var isExportSheetVisible by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
-
-    val sheetCardPaletteItems = listOf(
-        BottomSheetModel(
-            Icons.Rounded.Add, "Add Card", "Add Card"
-        ), BottomSheetModel(
-            Icons.Rounded.Remove, "Remove Card", "Remove Card"
-        ), BottomSheetModel(
-            Icons.Rounded.CopyAll, "Copy Color Code", "Copy Color Code"
-        )
-    )
-
-    val exportPaletteItems = listOf(
-        BottomSheetModel(
-            Icons.Outlined.Description, "Export As Svg", "SVG"
-        ), BottomSheetModel(
-            Icons.Outlined.Image,
-            "Export As Image",
-            "Image"
-        )
-    )
-
-    val bottomSheetContentForMoreOption = listOf(
-        BottomSheetModel(
-            Icons.Rounded.FavoriteBorder, "Save Color", "Save Color"
-        ), BottomSheetModel(
-            Icons.Outlined.FileDownload,
-            "Download Palette",
-            "Download Palette",
-            Icons.AutoMirrored.Rounded.KeyboardArrowRight
-        )
-    )
-
-    if (isSheetPaletteItemsVisible) {
-        BottomSheet(items = sheetCardPaletteItems, onItemClick = {
-            when (it) {
-                0 -> {
-                    if (maxCardDisplayed > 0) {
-                        viewModel.addCard()
-                        maxCardDisplayed--
-                        Log.d(TAG, "max card displayed: $maxCardDisplayed")
-                    }
-                    isSheetPaletteItemsVisible = false
-                }
-
-                1 -> {
-                    viewModel.removeCard(cardIndex)
-                    maxCardDisplayed++
-                    isSheetPaletteItemsVisible = false
-                }
-
-                2 -> {
-                    viewModel.copyColorCode(cardIndex, clipboardManager, ColorRepresentation.RGB)
-                    isSheetPaletteItemsVisible = false
-                    scope.launch {
-                        snackBarHostState.showSnackbar("Color copied!")
-                    }
-                }
-            }
-        }, onDismissSheet = { isSheetPaletteItemsVisible = false })
-    }
-
-    if (isMoreOptionSheetVisible) {
-        BottomSheet(
-            items = bottomSheetContentForMoreOption,
-            onItemClick = { index ->
-                when (index) {
-                    0 -> Log.d(TAG, "Save Button Clicked")
-                    1 -> {
-                        isExportSheetVisible = true
-                        isMoreOptionSheetVisible = false
-                    }
-                }
-            },
-            onDismissSheet = { isMoreOptionSheetVisible = false })
-    }
-
-    if (isExportSheetVisible) {
-        BottomSheet(
-            items = exportPaletteItems,
-            onItemClick = { index ->
-                when (index) {
-                    0 -> Log.d(TAG, "PDF item Clicked")
-                    1 -> Log.d(TAG, "com.example.colorPal.model.Image Item Clicked")
-                }
-            },
-            onDismissSheet = { isExportSheetVisible = false })
-    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchColorScheme(viewModel.getHexValue(), mode = "monochrome")
@@ -187,39 +93,75 @@ fun ColorPaletteGeneratorScreen(
         Column(
             modifier = Modifier
                 .padding(it)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
         ) {
-            saveFetchedColors?.forEachIndexed { index, color ->
-                ColorCard(modifier = Modifier.weight(1f),
-                    color = color,
-                    onCardClick = {
-                        cardIndex = index
-                        isSheetPaletteItemsVisible = true
-                    })
-                // Remove spacing on the last card
-                if (index <= colorLiveData!!.colors!!.size) Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.85f)
+            ) {
+                saveFetchedColors?.forEachIndexed { index, color ->
+                    ColorCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        color = color,
+                        onCardClick = {
+                            cardIndex = index
+                            isSheetPaletteItemsVisible = true
+                        })
+                    // Remove spacing on the last card
+                    if (index <= colorLiveData!!.colors!!.size) Spacer(
+                        modifier = Modifier.height(
+                            10.dp
+                        )
+                    )
+                }
             }
 
-            Row(
-                modifier = Modifier.height(100.dp), verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = {
-                    val generateRandomHex = viewModel.getHexValue()
-                    viewModel.fetchColorScheme(
-                        hexCode = generateRandomHex, mode = "monochrome"
-                    )
-                }, modifier = Modifier.fillMaxWidth(.85f)) {
-                    Text(text = "Generate")
+            GenerateButton(viewModel)
+        }
+    })
+
+    val sheetCardPaletteItems = listOf(
+        BottomSheetModel(
+            Icons.Rounded.Add, "Add Card", "Add Card"
+        ), BottomSheetModel(
+            Icons.Rounded.Remove, "Remove Card", "Remove Card"
+        ), BottomSheetModel(
+            Icons.Rounded.CopyAll, "Copy Color Code", "Copy Color Code"
+        )
+    )
+
+    if (isSheetPaletteItemsVisible) {
+        BottomSheet(items = sheetCardPaletteItems, onItemClick = {
+            when (it) {
+                0 -> {
+                    if (maxCardDisplayed > 0) {
+                        viewModel.addCard()
+                        maxCardDisplayed--
+                    }
+                    //isSheetPaletteItemsVisible = false
                 }
 
-                Box(modifier = Modifier.fillMaxWidth(), Alignment.CenterEnd) {
-                    IconButton(onClick = { isMoreOptionSheetVisible = true }) {
-                        Icon(imageVector = Icons.Rounded.Tune, contentDescription = "More Option")
+                1 -> {
+                    viewModel.removeCard(cardIndex)
+                    maxCardDisplayed++
+                    //isSheetPaletteItemsVisible = false
+                }
+
+                2 -> {
+                    viewModel.copyColorCode(cardIndex, clipboardManager, ColorRepresentation.RGB)
+                    //isSheetPaletteItemsVisible = false
+                    scope.launch {
+                        snackBarHostState.showSnackbar("Color copied!")
                     }
                 }
             }
-        }
-    })
+        }, onDismissSheet = { isSheetPaletteItemsVisible = false })
+    }
 }
 
 @Composable
@@ -254,11 +196,38 @@ fun ColorCard(
 
 }
 
+@Composable
+fun GenerateButton(
+    viewModel: ColorGeneratorViewModel = viewModel()
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = {
+            val generateRandomHex = viewModel.getHexValue()
+            viewModel.fetchColorScheme(
+                hexCode = generateRandomHex, mode = "monochrome"
+            )
+        }, modifier = Modifier.fillMaxWidth(.85f)) {
+            Text(text = "Generate")
+        }
+
+        Box(modifier = Modifier.fillMaxWidth(), Alignment.CenterEnd) {
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Rounded.FavoriteBorder,
+                    contentDescription = "Save Palette"
+                )
+            }
+        }
+    }
+}
 
 @Preview
 @Composable
 fun ColorPaletteGeneratorScreenPreview() {
     val viewModel = viewModel<ColorGeneratorViewModel>()
-
-    ColorPaletteGeneratorScreen(viewModel)
 }
