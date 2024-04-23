@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.colorPal.ui.screens.generate.ColorPaletteGeneratorScreen
+import com.example.colorPal.ui.navigation.Navigation
 import com.example.colorPal.ui.theme.ColorPalTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,10 +22,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ColorPaletteGeneratorScreen()
+                    Navigation()
                 }
             }
         }
     }
 }
-
