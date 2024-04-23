@@ -18,7 +18,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CopyAll
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,17 +48,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.colorPal.model.ColorRepresentation
 import com.example.colorPal.model.Colors
-import com.example.colorPal.ui.composable.bottomSheet.BottomSheet
-import com.example.colorPal.ui.composable.bottomSheet.BottomSheetModel
+import com.example.colorPal.ui.component.bottomSheet.BottomSheet
+import com.example.colorPal.ui.component.bottomSheet.BottomSheetModel
 import kotlinx.coroutines.launch
 
 
-private const val TAG: String = "ColorPaletteGeneratorScreen"
+//private const val TAG: String = "ColorPaletteGeneratorScreen"
 
 @SuppressLint("RememberReturnType", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorPaletteGeneratorScreen(
+fun GeneratorScreen(
     viewModel: ColorGeneratorViewModel = viewModel()
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -83,10 +82,6 @@ fun ColorPaletteGeneratorScreen(
         TopAppBar(title = {
             Text(text = "Generator")
         })
-    }, bottomBar = {
-        BottomAppBar {
-            Text(text = "bottom bar")
-        }
     }, snackbarHost = {
         SnackbarHost(hostState = snackBarHostState)
     }, content = {
@@ -229,5 +224,5 @@ fun GenerateButton(
 @Preview
 @Composable
 fun ColorPaletteGeneratorScreenPreview() {
-    val viewModel = viewModel<ColorGeneratorViewModel>()
+    //val viewModel = viewModel<ColorGeneratorViewModel>()
 }

@@ -1,4 +1,4 @@
-package com.example.colorPal.ui.composable.bottomSheet
+package com.example.colorPal.ui.component.bottomSheet
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
