@@ -7,6 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.colorPal.data.RetrofitInstance
+import com.example.colorPal.data.database.ColorInfo
+import com.example.colorPal.data.database.ColorRepository
+import com.example.colorPal.data.database.Graph
 import com.example.colorPal.model.ColorApiResponse
 import com.example.colorPal.model.ColorRepresentation
 import com.example.colorPal.model.Colors
@@ -17,9 +20,9 @@ import java.util.Random
 private const val TAG: String = "ViewModel"
 private var numberOfColorsToSave = 3
 
-class ColorGeneratorViewModel : ViewModel() {
-    private val _colorLiveData = MutableLiveData<ColorApiResponse>()
-    val colorLiveData: MutableLiveData<ColorApiResponse>
+class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.repository) : ViewModel() {
+    private val _colorLiveData = MutableLiveData<ColorApiResponse?>()
+    val colorLiveData: MutableLiveData<ColorApiResponse?>
         get() = _colorLiveData
 
     private val _saveFetchedColors = MutableLiveData<MutableList<Colors>?>()
@@ -29,6 +32,10 @@ class ColorGeneratorViewModel : ViewModel() {
     fun fetchColorScheme(hexCode: String, mode: String) {
         viewModelScope.launch {
             try {
+                // Clear existing values before fetching new data
+                _colorLiveData.value = null
+                _saveFetchedColors.value = null
+
                 val response = RetrofitInstance.colorApiService.getColorsByHex(
                     hex = hexCode,
                     mode = mode,
@@ -36,7 +43,9 @@ class ColorGeneratorViewModel : ViewModel() {
 
                 _colorLiveData.postValue(response)
 
-                _saveFetchedColors.postValue(response.colors?.take(numberOfColorsToSave) as MutableList<Colors>?)
+                val limitedColors =
+                    response.colors?.take(numberOfColorsToSave) as MutableList<Colors>?
+                _saveFetchedColors.postValue(limitedColors)
 
             } catch (e: Exception) {
                 Log.e(TAG, "Exception fetching color scheme", e)
@@ -56,10 +65,15 @@ class ColorGeneratorViewModel : ViewModel() {
         }
     }
 
-    fun copyColorCode(index: Int, clipboardManager: ClipboardManager, colorMode: ColorRepresentation) {
+    fun copyColorCode(
+        index: Int, clipboardManager: ClipboardManager, colorMode: ColorRepresentation
+    ) {
         when (colorMode) {
-            ColorRepresentation.HEX -> _saveFetchedColors.value?.get(index)?.hex?.clean?.let { AnnotatedString(it) }
-                ?.let { clipboardManager.setText(it) }
+            ColorRepresentation.HEX -> _saveFetchedColors.value?.get(index)?.hex?.clean?.let {
+                AnnotatedString(
+                    it
+                )
+            }?.let { clipboardManager.setText(it) }
 
             ColorRepresentation.RGB -> _saveFetchedColors.value?.get(index)?.rgb?.value?.let {
                 AnnotatedString(
@@ -93,6 +107,41 @@ class ColorGeneratorViewModel : ViewModel() {
         }
     }
 
+    fun savePalette(name: String) {
+        val colorToSave = _saveFetchedColors.value ?: return
+
+        val communality = generateUniqueRandomInt()
+
+        viewModelScope.launch {
+            colorToSave.map { color ->
+                repository.insertColor(
+                    ColorInfo(
+                        hex = color.hex?.value,
+                        rgb = color.rgb?.value,
+                        hsl = color.hsl?.value,
+                        hsv = color.hsv?.value,
+                        name = color.name?.value,
+                        exactMatchName = color.name?.exactMatchName ?: false,
+                        cmyk = color.cmyk?.value,
+                        xyz = color.xyz?.value,
+                        contrast = color.contrast?.value,
+                        paletteName = name,
+                        commonality = communality
+                    )
+                )
+            }
+        }
+    }
+
+    private fun generateUniqueRandomInt(): Int? {
+        val range = 1..100
+        val existingValues = setOf(10, 20, 30)
+
+        val allValues = range.toSet()
+        val availableValues = allValues - existingValues
+        return availableValues.randomOrNull()
+    }
+
     fun getHexValue(): String {
         val random = Random()
         // Generate a random integer between 0 and 0xFFFFFF (inclusive)
@@ -100,5 +149,4 @@ class ColorGeneratorViewModel : ViewModel() {
         // Convert the integer to uppercase hex string with leading zeros
         return intValue.toString(16).uppercase().padStart(6, '0')
     }
-
 }
