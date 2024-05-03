@@ -39,7 +39,7 @@ fun BottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(padding)
+                    .padding(start = padding, top = padding, end = padding)
             ) {
                 items.forEachIndexed { index, item ->
                     BottomSheetItem(item = item, index, onItemClick = onItemClick)
@@ -57,7 +57,6 @@ fun BottomSheetItem(
     index: Int,
     onItemClick: (Int) -> Unit,
 ) {
-    val buttonTextPadding = 5.dp
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +72,6 @@ fun BottomSheetItem(
                 Icon(
                     imageVector = item.icon,
                     contentDescription = item.contentDescription,
-                    modifier = Modifier.padding(end = buttonTextPadding)
                 )
             }
             Text(text = item.text)
