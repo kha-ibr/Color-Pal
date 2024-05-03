@@ -29,7 +29,7 @@ data class Colors(
     val hsv: Hsv?,
     val name: Name?,
     val cmyk: Cmyk?,
-    val xyz: XYZ?,
+    @SerializedName("XYZ") val xyz: XYZ?,
     val contrast: Contrast?,
 )
 @Serializable

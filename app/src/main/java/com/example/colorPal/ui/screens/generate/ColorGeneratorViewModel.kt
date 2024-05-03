@@ -14,7 +14,7 @@ import com.example.colorPal.model.ColorApiResponse
 import com.example.colorPal.model.ColorRepresentation
 import com.example.colorPal.model.Colors
 import kotlinx.coroutines.launch
-import java.util.Random
+import kotlin.random.Random
 
 
 private const val TAG: String = "ViewModel"
@@ -110,10 +110,11 @@ class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.re
     fun savePalette(name: String) {
         val colorToSave = _saveFetchedColors.value ?: return
 
-        val communality = generateUniqueRandomInt()
+        val communality = Random.nextInt()
 
         viewModelScope.launch {
             colorToSave.map { color ->
+                Log.d(TAG, "${color.xyz?.value}")
                 repository.insertColor(
                     ColorInfo(
                         hex = color.hex?.value,
@@ -133,19 +134,9 @@ class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.re
         }
     }
 
-    private fun generateUniqueRandomInt(): Int? {
-        val range = 1..100
-        val existingValues = setOf(10, 20, 30)
-
-        val allValues = range.toSet()
-        val availableValues = allValues - existingValues
-        return availableValues.randomOrNull()
-    }
-
     fun getHexValue(): String {
-        val random = Random()
         // Generate a random integer between 0 and 0xFFFFFF (inclusive)
-        val intValue = random.nextInt(0x1000000)
+        val intValue = Random.nextInt(0x1000000)
         // Convert the integer to uppercase hex string with leading zeros
         return intValue.toString(16).uppercase().padStart(6, '0')
     }

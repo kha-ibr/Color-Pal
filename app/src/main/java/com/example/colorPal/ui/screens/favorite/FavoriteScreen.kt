@@ -68,23 +68,23 @@ fun FavoriteColorCard(savedColors: List<Colors>?) {
                         .background(color = Color(parseColor(it.hex?.value)))
                         .weight(1f)
                 )
-            }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            Arrangement.SpaceBetween,
-            Alignment.CenterVertically
-        ) {
-            Text(text = "Color 1", modifier = Modifier.padding(start = 10.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    Text(text = it.name?.value.toString(), modifier = Modifier.padding(start = 10.dp))
 
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = Icons.Default.MoreHoriz,
-                    contentDescription = "Options"
-                )
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            contentDescription = "Options"
+                        )
+                    }
+                }
             }
         }
     }
