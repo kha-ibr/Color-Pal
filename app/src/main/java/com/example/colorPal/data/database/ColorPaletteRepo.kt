@@ -1,10 +1,12 @@
 package com.example.colorPal.data.database
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class ColorRepository(private val dao: ColorDao) {
 
-    fun getAllColors(): Flow<List<ColorInfo>> = dao.getAllColors()
+    suspend fun getAllColors(): List<ColorInfo> {
+        return dao.getAllColors().first() // Assuming only one emission
+    }
 
     suspend fun insertColor(colors: ColorInfo) = dao.insertColor(colors)
 

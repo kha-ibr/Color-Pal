@@ -110,7 +110,7 @@ class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.re
     fun savePalette(name: String) {
         val colorToSave = _saveFetchedColors.value ?: return
 
-        val communality = Random.nextInt()
+        val communality = Random.nextInt(0, Int.MAX_VALUE)
 
         viewModelScope.launch {
             colorToSave.map { color ->
