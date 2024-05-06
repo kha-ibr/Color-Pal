@@ -1,27 +1,20 @@
 package com.example.colorPal.ui.screens.favorite
 
-import android.graphics.Color.parseColor
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,20 +22,13 @@ import com.example.colorPal.data.database.ColorInfo
 
 private const val TAG = "FavoriteScreen"
 
+@SuppressLint("CheckResult")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()) {
     val padding = 16.dp
-    val colors by viewModel.colorList.observeAsState()
-    val colorList = mutableListOf<ColorInfo>()
 
-    viewModel.getAllColor()
-
-    colors?.forEach {
-        colorList.addAll(listOf(it))
-    }
-
-    Log.d(TAG, colorList.toString())
+    val colors = viewModel.allColors.observeAsState(emptyList())
 
     Scaffold(topBar = { TopAppBar(title = { Text(text = "Favorite") }) },
         content = { paddingValues ->
@@ -52,23 +38,28 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()) {
                     .padding(horizontal = padding)
                     .fillMaxSize()
             ) {
-                FavoriteColorCard(colors = colorList)
+                FavoriteColorCard(colors = colors)
             }
         }
     )
 }
 
 @Composable
-fun FavoriteColorCard(colors: List<ColorInfo>?) {
+fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
     ) {
 
+        /*
         if (colors == null) {
             // Show a loading indicator (e.g., CircularProgressIndicator())
-            CircularProgressIndicator(modifier = Modifier.fillMaxSize().align(Alignment.CenterHorizontally))
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.CenterHorizontally)
+            )
         } else {
             colors.forEachIndexed { _, colorInfo ->
 
@@ -80,7 +71,7 @@ fun FavoriteColorCard(colors: List<ColorInfo>?) {
                 )
             }
         }
-        /*
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
