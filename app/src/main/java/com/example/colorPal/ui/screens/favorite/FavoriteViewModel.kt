@@ -9,7 +9,7 @@ import com.example.colorPal.data.database.Graph
 
 private const val TAG = "FavoriteViewModel"
 
-class FavoriteViewModel(private val repository: ColorRepository = Graph.repository) : ViewModel() {
+class FavoriteViewModel(repository: ColorRepository = Graph.repository) : ViewModel() {
 
     val allColors: LiveData<List<ColorInfo>> = repository.allColors.asLiveData()
 
