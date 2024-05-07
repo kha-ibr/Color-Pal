@@ -107,7 +107,7 @@ class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.re
         }
     }
 
-    fun savePalette(name: String) {
+    fun savePalette() {
         val colorToSave = _saveFetchedColors.value ?: return
 
         val communality = Random.nextInt(0, Int.MAX_VALUE)

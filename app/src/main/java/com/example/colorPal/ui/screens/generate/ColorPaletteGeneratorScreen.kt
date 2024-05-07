@@ -7,23 +7,16 @@ import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CopyAll
@@ -35,13 +28,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -220,92 +211,45 @@ fun ColorCard(
 fun GenerateButton(
     viewModel: ColorGeneratorViewModel = viewModel()
 ) {
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Row(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(onClick = {
-            val generateRandomHex = viewModel.getHexValue()
-            viewModel.fetchColorScheme(
-                hexCode = generateRandomHex, mode = "monochrome"
-            )
-        }, modifier = Modifier.fillMaxWidth(.85f)) {
-            Text(text = "Generate")
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
         }
-
-        Box(modifier = Modifier.fillMaxWidth(), Alignment.CenterEnd) {
-            IconButton(onClick = { showBottomSheet = true }) {
-                Icon(
-                    imageVector = Icons.Rounded.FavoriteBorder, contentDescription = "Save Palette"
+    ) { paddingValues ->
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .padding(paddingValues),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(onClick = {
+                val generateRandomHex = viewModel.getHexValue()
+                viewModel.fetchColorScheme(
+                    hexCode = generateRandomHex, mode = "monochrome"
                 )
+            }, modifier = Modifier.fillMaxWidth(.85f)) {
+                Text(text = "Generate")
+            }
+
+            Box(modifier = Modifier.fillMaxWidth(), Alignment.CenterEnd) {
+                IconButton(onClick = {
+                    viewModel.savePalette()
+
+                    scope.launch {
+                        snackBarHostState.showSnackbar(message = "Color palette Saved!")
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.FavoriteBorder, contentDescription = "Save Palette"
+                    )
+                }
             }
         }
     }
-    if (showBottomSheet) SavePalette(onDismiss = { showBottomSheet = false }, showBottomSheet = { showBottomSheet = false })
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SavePalette(
-    viewModel: ColorGeneratorViewModel = viewModel(),
-    onDismiss: () -> Unit = {},
-    showBottomSheet: () -> Unit
-) {
-    val sheetState = rememberModalBottomSheetState()
-    var text by remember { mutableStateOf("") }
-    val saveFetchedColors by viewModel.saveFetchedColors.observeAsState()
-    var isLoading by remember { mutableStateOf(false) }
-
-    ModalBottomSheet(sheetState = sheetState, content = {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            saveFetchedColors?.forEach {
-                Box(
-                    modifier = Modifier
-                        .width(42.dp)
-                        .height(42.dp)
-                        .padding(4.dp)
-                        .background(color = Color(parseColor(it.hex?.value)), shape = CircleShape)
-                )
-            }
-        }
-
-        OutlinedTextField(
-            value = text,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            onValueChange = { text = it },
-            label = { Text("Name") },
-            singleLine = true,
-            maxLines = 1
-        )
-
-        Button(
-            onClick = {
-                if(text.isNotEmpty())
-                    viewModel.savePalette(text)
-
-                showBottomSheet()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            enabled = text.isNotEmpty()
-        ) {
-            Text(text = "Save Palette")
-        }
-
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
-    }, onDismissRequest = { onDismiss() })
 }
 
 @Preview(showSystemUi = true)
