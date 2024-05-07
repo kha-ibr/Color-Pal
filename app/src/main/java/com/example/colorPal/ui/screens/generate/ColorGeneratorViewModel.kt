@@ -118,15 +118,6 @@ class ColorGeneratorViewModel(private val repository: ColorRepository = Graph.re
                 repository.insertColor(
                     ColorInfo(
                         hex = color.hex?.value,
-                        rgb = color.rgb?.value,
-                        hsl = color.hsl?.value,
-                        hsv = color.hsv?.value,
-                        name = color.name?.value,
-                        exactMatchName = color.name?.exactMatchName ?: false,
-                        cmyk = color.cmyk?.value,
-                        xyz = color.xyz?.value,
-                        contrast = color.contrast?.value,
-                        paletteName = name,
                         commonality = communality
                     )
                 )

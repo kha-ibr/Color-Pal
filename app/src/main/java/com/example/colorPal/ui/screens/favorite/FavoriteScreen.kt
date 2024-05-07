@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,15 +57,15 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         groupedItems.forEach { (_, color) ->
             item {
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .height(50.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(.6f)
+                            .fillMaxHeight()
                     ) {
                         color.forEach { color ->
                             Box(
