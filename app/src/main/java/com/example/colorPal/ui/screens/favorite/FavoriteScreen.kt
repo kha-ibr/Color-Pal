@@ -60,18 +60,24 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()) {
 }
 
 @Composable
-fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
+fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewModel = viewModel()) {
     val groupedItems = colors.value.groupBy { it.commonality }
     var showSheet by remember { mutableStateOf(false) }
 
+
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        groupedItems.forEach { (_, color) ->
+        groupedItems.forEach { (commonality, color) ->
+
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .clickable { showSheet = true }
+                        .clickable {
+                            viewModel.onCardClick(commonality)
+                            showSheet = true
+                        }
                 ) {
                     Row(
                         modifier = Modifier
