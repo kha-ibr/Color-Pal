@@ -2,6 +2,7 @@ package com.example.colorPal.ui.screens.favorite
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -19,13 +22,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.colorPal.data.database.ColorInfo
+import com.example.colorPal.ui.component.bottomSheet.BottomSheet
+import com.example.colorPal.ui.component.bottomSheet.BottomSheetModel
 
 private const val TAG = "FavoriteScreen"
 
@@ -53,6 +62,7 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()) {
 @Composable
 fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
     val groupedItems = colors.value.groupBy { it.commonality }
+    var showSheet by remember { mutableStateOf(false) }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         groupedItems.forEach { (_, color) ->
@@ -61,6 +71,7 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .clickable { showSheet = true }
                 ) {
                     Row(
                         modifier = Modifier
@@ -87,6 +98,11 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>) {
             }
         }
     }
+
+    val items = listOf(BottomSheetModel(icon = Icons.Default.DeleteOutline, text = "Delete Palette"))
+
+    if (showSheet)
+        BottomSheet(items = items, onItemClick = {  }, onDismissSheet = { showSheet = false })
 }
 
 @Preview
