@@ -74,7 +74,7 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewMod
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(100.dp)
                         .clickable {
                             if (commonality != null) {
                                 common = commonality

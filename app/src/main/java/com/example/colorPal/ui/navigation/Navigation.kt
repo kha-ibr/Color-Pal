@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.colorPal.ui.screens.favorite.FavoriteScreen
 import com.example.colorPal.ui.screens.generate.GeneratorScreen
+import com.example.colorPal.ui.screens.settings.SettingScreen
 
 @Composable
 fun Navigation() {
@@ -68,7 +69,7 @@ fun Navigation() {
             }
 
             composable(route = Screens.SETTINGS.name) {
-
+                SettingScreen()
             }
         }
     }
