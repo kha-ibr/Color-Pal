@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,7 +65,7 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewMod
     val groupedItems = colors.value.groupBy { it.commonality }
     var showSheet by remember { mutableStateOf(false) }
 
-
+    var common by remember { mutableIntStateOf(0) }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         groupedItems.forEach { (commonality, color) ->
@@ -75,7 +76,10 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewMod
                         .fillMaxWidth()
                         .height(50.dp)
                         .clickable {
-                            viewModel.onCardClick(commonality)
+                            if (commonality != null) {
+                                common = commonality
+                            }
+
                             showSheet = true
                         }
                 ) {
@@ -105,10 +109,17 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewMod
         }
     }
 
-    val items = listOf(BottomSheetModel(icon = Icons.Default.DeleteOutline, text = "Delete Palette"))
+    val items =
+        listOf(BottomSheetModel(icon = Icons.Default.DeleteOutline, text = "Delete Palette"))
 
     if (showSheet)
-        BottomSheet(items = items, onItemClick = {  }, onDismissSheet = { showSheet = false })
+        BottomSheet(
+            items = items,
+            onItemClick = {
+                viewModel.onCardClick(common)
+                showSheet = false
+            },
+            onDismissSheet = { showSheet = false })
 }
 
 @Preview
