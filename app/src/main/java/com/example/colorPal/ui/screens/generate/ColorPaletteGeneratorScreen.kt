@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -167,7 +168,11 @@ fun GeneratorScreen(
                     viewModel.copyColorCode(cardIndex, clipboardManager, ColorRepresentation.RGB)
                     isSheetPaletteItemsVisible = false
                     scope.launch {
-                        snackBarHostState.showSnackbar("Color copied!")
+                        snackBarHostState.showSnackbar(
+                            "Color copied!",
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 }
             }
@@ -214,11 +219,9 @@ fun GenerateButton(
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackBarHostState)
-        }
-    ) { paddingValues ->
+    Scaffold(snackbarHost = {
+        SnackbarHost(hostState = snackBarHostState)
+    }) { paddingValues ->
         Row(
             modifier = Modifier
                 .fillMaxHeight()
@@ -240,11 +243,16 @@ fun GenerateButton(
                     viewModel.savePalette()
 
                     scope.launch {
-                        snackBarHostState.showSnackbar(message = "Color palette Saved!")
+                        snackBarHostState.showSnackbar(
+                            message = "Color palette Saved!",
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 }) {
                     Icon(
-                        imageVector = Icons.Rounded.FavoriteBorder, contentDescription = "Save Palette"
+                        imageVector = Icons.Rounded.FavoriteBorder,
+                        contentDescription = "Save Palette"
                     )
                 }
             }
