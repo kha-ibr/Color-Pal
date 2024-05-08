@@ -22,8 +22,8 @@ interface ColorDao {
     @Update(onConflict = OnConflictStrategy.REPLACE, entity = ColorInfo::class)
     fun updateColors(colors: ColorInfo)
 
-    @Query("DELETE FROM color_palette WHERE id = :id")
-    fun deleteColors(id: Int)
+    @Query("DELETE FROM color_palette WHERE commonality = :commonality")
+    fun deleteColors(commonality: Int)
 }
 
 @Database(entities = [ColorInfo::class], version = 1, exportSchema = false)

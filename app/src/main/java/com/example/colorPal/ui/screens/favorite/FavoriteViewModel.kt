@@ -1,6 +1,5 @@
 package com.example.colorPal.ui.screens.favorite
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -15,6 +14,6 @@ class FavoriteViewModel(repository: ColorRepository = Graph.repository) : ViewMo
     val allColors: LiveData<List<ColorInfo>> = repository.allColors.asLiveData()
 
     fun onCardClick(commonality: Int?) {
-        Log.d(TAG, "$commonality")
+
     }
 }
