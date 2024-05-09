@@ -18,6 +18,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.colorPal.ui.component.bottomSheet.BottomSheet
+import com.example.colorPal.ui.component.bottomSheet.BottomSheetModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +50,14 @@ fun SettingScreen() {
             GeneratorCard()
         }
     }
+
+
 }
 
 @Composable
-fun GeneralCard(
-    onCardClick: () -> Unit = {}
-) {
+fun GeneralCard() {
+    var showSheet by remember { mutableStateOf(false) }
+
     Column {
         Text(
             text = "General", modifier = Modifier.padding(bottom = 8.dp), fontSize = 16.sp
@@ -58,7 +66,8 @@ fun GeneralCard(
         Card(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .clickable { onCardClick() }) {
+            .clickable { showSheet = true }
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -79,12 +88,18 @@ fun GeneralCard(
             }
         }
     }
+
+    val theme = listOf(BottomSheetModel(text = "Light"), BottomSheetModel(text = "Dark"))
+
+    if (showSheet)
+        BottomSheet(items = theme, onItemClick = {}, onDismissSheet = { showSheet = false })
 }
 
 @Composable
-fun GeneratorCard(
-    onCardClickHarmony: () -> Unit = {}, onCardClickColorInfo: () -> Unit = {}
-) {
+fun GeneratorCard() {
+    var showSheetForHarmony by remember { mutableStateOf(false) }
+    var showSheetForColorInfo by remember { mutableStateOf(false) }
+
     Column {
         Text(
             text = "Generator", modifier = Modifier.padding(bottom = 8.dp), fontSize = 16.sp
@@ -93,7 +108,8 @@ fun GeneratorCard(
         Card(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .clickable { onCardClickHarmony() }) {
+            .clickable { showSheetForHarmony = true }
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -116,11 +132,11 @@ fun GeneratorCard(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clickable { onCardClickColorInfo() }) {
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { showSheetForColorInfo = true }
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -141,7 +157,36 @@ fun GeneratorCard(
             }
         }
     }
+
+    val harmony = listOfColorHarmony()
+    val colorInfo = listOfColorInfo()
+
+    if (showSheetForHarmony)
+        BottomSheet(items = harmony, onItemClick = {}, onDismissSheet = { showSheetForHarmony = false })
+
+    if (showSheetForColorInfo)
+        BottomSheet(items = colorInfo, onItemClick = {}, onDismissSheet = { showSheetForColorInfo = false })
 }
+
+fun listOfColorHarmony() = listOf(
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome"),
+    BottomSheetModel(text = "Monochrome")
+)
+
+fun listOfColorInfo() = listOf(
+    BottomSheetModel(text = "Hex"),
+    BottomSheetModel(text = "Rgb"),
+    BottomSheetModel(text = "Hsv"),
+    BottomSheetModel(text = "Hsl"),
+    BottomSheetModel(text = "cmyk"),
+    BottomSheetModel(text = "Xyz"),
+    BottomSheetModel(text = "Name")
+)
 
 @Preview
 @Composable
