@@ -170,22 +170,23 @@ fun GeneratorCard() {
 
 fun listOfColorHarmony() = listOf(
     BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome"),
-    BottomSheetModel(text = "Monochrome")
+    BottomSheetModel(text = "Monochrome dark"),
+    BottomSheetModel(text = "Monochrome light"),
+    BottomSheetModel(text = "Analogic"),
+    BottomSheetModel(text = "Complement"),
+    BottomSheetModel(text = "Analogic Complement"),
+    BottomSheetModel(text = "Triad"),
+    BottomSheetModel(text = "Quad")
 )
 
 fun listOfColorInfo() = listOf(
     BottomSheetModel(text = "Hex"),
     BottomSheetModel(text = "Rgb"),
-    BottomSheetModel(text = "Hsv"),
     BottomSheetModel(text = "Hsl"),
-    BottomSheetModel(text = "cmyk"),
-    BottomSheetModel(text = "Xyz"),
-    BottomSheetModel(text = "Name")
+    BottomSheetModel(text = "Hvl"),
+    BottomSheetModel(text = "Name"),
+    BottomSheetModel(text = "Cmyk"),
+    BottomSheetModel(text = "XYZ"),
 )
 
 @Preview
