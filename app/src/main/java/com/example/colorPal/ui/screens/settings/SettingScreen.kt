@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,8 +81,75 @@ fun GeneralCard(
     }
 }
 
+@Composable
+fun GeneratorCard(
+    onCardClickHarmony: () -> Unit = {},
+    onCardClickColorInfo: () -> Unit = {}
+) {
+    Scaffold { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            Text(
+                text = "Generator",
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontSize = 16.sp
+            )
+
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .clickable { onCardClickHarmony() }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Color Harmony", fontWeight = FontWeight.Medium)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Monochrome", modifier = Modifier.padding(end = 4.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color(0xFF525252)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .clickable { onCardClickColorInfo() }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Color Info", fontWeight = FontWeight.Medium)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Hex", modifier = Modifier.padding(end = 4.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color(0xFF525252)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun PreviewCard() {
-    GeneralCard()
+//    GeneralCard()
+    GeneratorCard()
 }
