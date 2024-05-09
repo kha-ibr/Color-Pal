@@ -29,15 +29,19 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen() {
+    val padding = 16.dp
+
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "Settings") })
     }) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(start = padding, end = padding)
         ) {
-            Text(text = "Settings")
+            GeneralCard()
+            Spacer(modifier = Modifier.height(padding))
+            GeneratorCard()
         }
     }
 }
@@ -46,35 +50,31 @@ fun SettingScreen() {
 fun GeneralCard(
     onCardClick: () -> Unit = {}
 ) {
-    Scaffold { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Text(
-                text = "General",
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontSize = 16.sp
-            )
+    Column {
+        Text(
+            text = "General", modifier = Modifier.padding(bottom = 8.dp), fontSize = 16.sp
+        )
 
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clickable { onCardClick() }) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "App Theme", fontWeight = FontWeight.Medium)
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { onCardClick() }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "App Theme", fontWeight = FontWeight.Medium)
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Light", modifier = Modifier.padding(end = 4.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = Color(0xFF525252)
-                        )
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Light", modifier = Modifier.padding(end = 4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color(0xFF525252)
+                    )
                 }
             }
         }
@@ -83,64 +83,60 @@ fun GeneralCard(
 
 @Composable
 fun GeneratorCard(
-    onCardClickHarmony: () -> Unit = {},
-    onCardClickColorInfo: () -> Unit = {}
+    onCardClickHarmony: () -> Unit = {}, onCardClickColorInfo: () -> Unit = {}
 ) {
-    Scaffold { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            Text(
-                text = "Generator",
-                modifier = Modifier.padding(bottom = 8.dp),
-                fontSize = 16.sp
-            )
+    Column {
+        Text(
+            text = "Generator", modifier = Modifier.padding(bottom = 8.dp), fontSize = 16.sp
+        )
 
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clickable { onCardClickHarmony() }) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Color Harmony", fontWeight = FontWeight.Medium)
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { onCardClickHarmony() }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Color Harmony", fontWeight = FontWeight.Medium)
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Monochrome", modifier = Modifier.padding(end = 4.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = Color(0xFF525252)
-                        )
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Monochrome", modifier = Modifier.padding(end = 4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color(0xFF525252)
+                    )
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-            Card(modifier = Modifier
+        Card(
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
                 .clickable { onCardClickColorInfo() }) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Color Info", fontWeight = FontWeight.Medium)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Color Info", fontWeight = FontWeight.Medium)
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Hex", modifier = Modifier.padding(end = 4.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = Color(0xFF525252)
-                        )
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Hex", modifier = Modifier.padding(end = 4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color(0xFF525252)
+                    )
                 }
             }
         }
@@ -150,6 +146,7 @@ fun GeneratorCard(
 @Preview
 @Composable
 private fun PreviewCard() {
-//    GeneralCard()
-    GeneratorCard()
+    //GeneralCard()
+    //GeneratorCard()
+    SettingScreen()
 }
