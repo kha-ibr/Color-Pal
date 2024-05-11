@@ -1,6 +1,7 @@
 package com.example.colorPal.ui.screens.settings
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import com.example.colorPal.ui.component.bottomSheet.BottomSheetModel
 @Composable
 fun SettingScreen() {
     val padding = 16.dp
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -49,7 +51,7 @@ fun SettingScreen() {
                 .padding(paddingValues)
                 .padding(start = padding, end = padding)
         ) {
-            GeneratorCard()
+            GeneratorCard(context)
             Spacer(modifier = Modifier.height(padding))
             AboutCard()
         }
@@ -83,9 +85,10 @@ fun AboutCard() {
 }
 
 @Composable
-fun GeneratorCard() {
+fun GeneratorCard(context: Context) {
     var showSheetForHarmony by remember { mutableStateOf(false) }
     var showSheetForColorInfo by remember { mutableStateOf(false) }
+    val sharedPreference = context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
 
     Column {
         Text(
@@ -106,10 +109,12 @@ fun GeneratorCard() {
                 Text(text = "Color Harmony", fontWeight = FontWeight.Bold)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Monochrome",
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
+                    sharedPreference.getString("harmony_item", "")?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
@@ -135,7 +140,8 @@ fun GeneratorCard() {
                 Text(text = "Color Info", fontWeight = FontWeight.Medium)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Hex", modifier = Modifier.padding(end = 4.dp))
+                    sharedPreference.getString("color_info_item", "")
+                        ?.let { Text(text = it, modifier = Modifier.padding(end = 4.dp)) }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
@@ -148,20 +154,33 @@ fun GeneratorCard() {
 
     val harmony = listOfColorHarmony()
     val colorInfo = listOfColorInfo()
-    val context = LocalContext.current
 
     if (showSheetForHarmony) BottomSheet(items = harmony,
         onItemClick = { _, item ->
             if (item != null) {
-                harmonyItems(item, context)
+                saveDataLocally(item, sharedPreference, "harmony_item")
             }
             showSheetForHarmony = false
         },
         onDismissSheet = { showSheetForHarmony = false })
 
     if (showSheetForColorInfo) BottomSheet(items = colorInfo,
-        onItemClick = { _, item -> },
+        onItemClick = { _, item ->
+            if (item != null) {
+                saveDataLocally(item, sharedPreference, "color_info_item")
+            }
+            showSheetForColorInfo = false
+        },
         onDismissSheet = { showSheetForColorInfo = false })
+}
+
+fun saveDataLocally(item: BottomSheetModel, sharedPreference: SharedPreferences, key: String) {
+    sharedPreference.edit().remove(key).apply()
+
+    val editor = sharedPreference.edit()
+
+    editor.putString(key, item.text)
+    editor.apply()
 }
 
 fun listOfColorHarmony() = listOf(
@@ -170,7 +189,7 @@ fun listOfColorHarmony() = listOf(
     BottomSheetModel(text = "Monochrome light"),
     BottomSheetModel(text = "Analogic"),
     BottomSheetModel(text = "Complement"),
-    BottomSheetModel(text = "Analogic Complement"),
+    BottomSheetModel(text = "Analogic complement"),
     BottomSheetModel(text = "Triad"),
     BottomSheetModel(text = "Quad")
 )
@@ -184,17 +203,6 @@ fun listOfColorInfo() = listOf(
     BottomSheetModel(text = "Cmyk"),
     BottomSheetModel(text = "XYZ"),
 )
-
-fun harmonyItems(item: BottomSheetModel, context: Context) {
-    val sharedPreference = context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
-    sharedPreference.edit().clear().apply()
-
-    val editor = sharedPreference.edit()
-
-    editor.putString("harmony_item", item.text)
-    editor.apply()
-}
-
 @Preview
 @Composable
 private fun PreviewCard() {
