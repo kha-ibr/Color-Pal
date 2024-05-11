@@ -19,9 +19,7 @@ class MainActivity : ComponentActivity() {
         Graph.provide(this)
 
         setContent {
-            ColorPalTheme(
-                useDarkTheme = false
-            ) {
+            ColorPalTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
