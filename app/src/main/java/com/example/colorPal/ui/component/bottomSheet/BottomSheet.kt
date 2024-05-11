@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BottomSheet(
     items: List<BottomSheetModel>,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Int, BottomSheetModel?) -> Unit,
     onDismissSheet: () -> Unit,
 ) {
     val padding = 16.dp
@@ -55,14 +55,14 @@ fun BottomSheet(
 fun BottomSheetItem(
     item: BottomSheetModel,
     index: Int,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Int, BottomSheetModel?) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
             .clickable {
-                onItemClick(index)
+                onItemClick(index, item)
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
