@@ -115,7 +115,7 @@ fun FavoriteColorCard(colors: State<List<ColorInfo>>, viewModel: FavoriteViewMod
     if (showSheet)
         BottomSheet(
             items = items,
-            onItemClick = {
+            onItemClick = { _, _ ->
                 viewModel.onCardClick(common)
                 showSheet = false
             },

@@ -148,8 +148,8 @@ fun GeneratorScreen(
     )
 
     if (isSheetPaletteItemsVisible) {
-        BottomSheet(items = sheetCardPaletteItems, onItemClick = {
-            when (it) {
+        BottomSheet(items = sheetCardPaletteItems, onItemClick = { index, _ ->
+            when (index) {
                 0 -> {
                     if (maxCardDisplayed > 0) {
                         viewModel.addCard()
