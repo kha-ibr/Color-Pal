@@ -109,7 +109,7 @@ fun GeneratorCard(context: Context) {
                 Text(text = "Color Harmony", fontWeight = FontWeight.Bold)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    sharedPreference.getString("harmony_item", "")?.let {
+                    sharedPreference.getString("harmony_item", null)?.let {
                         Text(
                             text = it,
                             modifier = Modifier.padding(end = 4.dp)
@@ -140,7 +140,7 @@ fun GeneratorCard(context: Context) {
                 Text(text = "Color Info", fontWeight = FontWeight.Medium)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    sharedPreference.getString("color_info_item", "")
+                    sharedPreference.getString("color_info_item", null)
                         ?.let { Text(text = it, modifier = Modifier.padding(end = 4.dp)) }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,

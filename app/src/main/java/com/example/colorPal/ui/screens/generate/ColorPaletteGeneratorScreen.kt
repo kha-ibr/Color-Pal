@@ -4,6 +4,8 @@ package com.example.colorPal.ui.screens.generate
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -64,9 +67,11 @@ private const val TAG: String = "ColorPaletteGeneratorScreen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeneratorScreen(
-    viewModel: ColorGeneratorViewModel = viewModel()
+    viewModel: ColorGeneratorViewModel = viewModel(),
+    context: Context = LocalContext.current
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val sharedPreference = context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
 
     val colorLiveData by viewModel.colorLiveData.observeAsState()
     val saveFetchedColors by viewModel.saveFetchedColors.observeAsState()
@@ -83,7 +88,14 @@ fun GeneratorScreen(
 
     LaunchedEffect(Unit) {
         isLoading = true
-        viewModel.fetchColorScheme(viewModel.getHexValue(), mode = "monochrome")
+
+        val mode = sharedPreference.getString("harmony_item", null)?.replace(" ", "-")
+            ?.lowercase()
+
+        if (mode != null) {
+            viewModel.fetchColorScheme(viewModel.getHexValue(), mode = mode)
+        }
+
         isLoading = false
     }
 
@@ -133,7 +145,7 @@ fun GeneratorScreen(
                 }
             }
 
-            GenerateButton(viewModel)
+            GenerateButton(viewModel, sharedPreference)
         }
     })
 
@@ -214,7 +226,8 @@ fun ColorCard(
 
 @Composable
 fun GenerateButton(
-    viewModel: ColorGeneratorViewModel = viewModel()
+    viewModel: ColorGeneratorViewModel = viewModel(),
+    sharedPreference: SharedPreferences
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -231,9 +244,15 @@ fun GenerateButton(
         ) {
             Button(onClick = {
                 val generateRandomHex = viewModel.getHexValue()
-                viewModel.fetchColorScheme(
-                    hexCode = generateRandomHex, mode = "monochrome"
-                )
+
+                val mode = sharedPreference.getString("harmony_item", null)?.replace(" ", "-")
+                    ?.lowercase()
+
+                if (mode != null) {
+                    viewModel.fetchColorScheme(
+                        hexCode = generateRandomHex, mode = mode
+                    )
+                }
             }, modifier = Modifier.fillMaxWidth(.85f)) {
                 Text(text = "Generate")
             }
