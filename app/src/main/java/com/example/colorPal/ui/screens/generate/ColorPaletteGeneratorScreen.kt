@@ -67,8 +67,7 @@ private const val TAG: String = "ColorPaletteGeneratorScreen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeneratorScreen(
-    viewModel: ColorGeneratorViewModel = viewModel(),
-    context: Context = LocalContext.current
+    viewModel: ColorGeneratorViewModel = viewModel(), context: Context = LocalContext.current
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val sharedPreference = context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
@@ -89,8 +88,7 @@ fun GeneratorScreen(
     LaunchedEffect(Unit) {
         isLoading = true
 
-        val mode = sharedPreference.getString("harmony_item", null)?.replace(" ", "-")
-            ?.lowercase()
+        val mode = sharedPreference.getString("harmony_item", null)?.replace(" ", "-")?.lowercase()
 
         if (mode != null) {
             viewModel.fetchColorScheme(viewModel.getHexValue(), mode = mode)
@@ -127,9 +125,10 @@ fun GeneratorScreen(
                         .fillMaxHeight(.85f)
                 ) {
                     saveFetchedColors?.forEachIndexed { index, color ->
-                        ColorCard(modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
+                        ColorCard(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
                             color = color,
                             onCardClick = {
                                 cardIndex = index
@@ -217,93 +216,50 @@ fun ColorCard(
             when (colorInfo) {
                 "Hex" -> color.hex?.clean.let {
                     if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        GetColorText(it, color.contrast?.value)
                     }
                 }
+
                 "Rgb" -> color.rgb?.value?.replace("rgb", "")?.replace("(", "")?.replace(")", "")
                     .let {
-                    if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        if (it != null) {
+                            GetColorText(it, color.contrast?.value)
+                        }
                     }
-                }
+
                 "Hsl" -> color.hsl?.value?.replace("hsl", "")?.replace("(", "")?.replace(")", "")
                     .let {
-                    if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        if (it != null) {
+                            GetColorText(it, color.contrast?.value)
+                        }
                     }
-                }
+
                 "Hsv" -> color.hsv?.value?.replace("hsv", "")?.replace("(", "")?.replace(")", "")
                     .let {
-                    if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        if (it != null) {
+                            GetColorText(it, color.contrast?.value)
+                        }
                     }
-                }
+
                 "Name" -> color.name?.value.let {
                     if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        GetColorText(it, color.contrast?.value)
                     }
                 }
+
                 "Cmyk" -> color.cmyk?.value?.replace("cmyk", "")?.replace("(", "")?.replace(")", "")
                     .let {
-                    if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        if (it != null) {
+                            GetColorText(it, color.contrast?.value)
+                        }
                     }
-                }
+
                 "XYZ" -> color.xyz?.value?.replace("XYZ", "")?.replace("(", "")?.replace(")", "")
                     .let {
-                    if (it != null) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .weight(5f)
-                                .padding(start = padding),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(parseColor(color.contrast?.value))
-                        )
+                        if (it != null) {
+                            GetColorText(it, color.contrast?.value)
+                        }
                     }
-                }
             }
         }
     }
@@ -312,8 +268,7 @@ fun ColorCard(
 
 @Composable
 fun GenerateButton(
-    viewModel: ColorGeneratorViewModel = viewModel(),
-    sharedPreference: SharedPreferences
+    viewModel: ColorGeneratorViewModel = viewModel(), sharedPreference: SharedPreferences
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -331,8 +286,8 @@ fun GenerateButton(
             Button(onClick = {
                 val generateRandomHex = viewModel.getHexValue()
 
-                val mode = sharedPreference.getString("harmony_item", null)?.replace(" ", "-")
-                    ?.lowercase()
+                val mode =
+                    sharedPreference.getString("harmony_item", null)?.replace(" ", "-")?.lowercase()
 
                 if (mode != null) {
                     viewModel.fetchColorScheme(
@@ -363,6 +318,18 @@ fun GenerateButton(
             }
         }
     }
+}
+
+@Composable
+fun GetColorText(text: String, contrastColor: String?) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp),
+        style = MaterialTheme.typography.bodyLarge,
+        color = Color(parseColor(contrastColor))
+    )
 }
 
 @Preview(showSystemUi = true)
