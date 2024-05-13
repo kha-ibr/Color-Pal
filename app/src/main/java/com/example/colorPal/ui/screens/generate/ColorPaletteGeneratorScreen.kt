@@ -134,7 +134,9 @@ fun GeneratorScreen(
                             onCardClick = {
                                 cardIndex = index
                                 isSheetPaletteItemsVisible = true
-                            })
+                            },
+                            sharedPreference = sharedPreference
+                        )
                         // Remove spacing on the last card
                         if (index <= colorLiveData!!.colors!!.size) Spacer(
                             modifier = Modifier.height(
@@ -197,8 +199,10 @@ fun ColorCard(
     modifier: Modifier = Modifier,
     color: Colors,
     onCardClick: () -> Unit,
+    sharedPreference: SharedPreferences
 ) {
     val padding = 16.dp
+    val colorInfo = sharedPreference.getString("color_info_item", null)
 
     Card(
         modifier = modifier.fillMaxWidth()
@@ -209,15 +213,97 @@ fun ColorCard(
             .clickable { onCardClick() }
             .background(color = Color(parseColor(color.hex?.value))),
             verticalAlignment = Alignment.CenterVertically) {
-            color.hex?.clean?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .weight(5f)
-                        .padding(start = padding),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color(parseColor(color.contrast?.value))
-                )
+
+            when (colorInfo) {
+                "Hex" -> color.hex?.clean.let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "Rgb" -> color.rgb?.value?.replace("rgb", "")?.replace("(", "")?.replace(")", "")
+                    .let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "Hsl" -> color.hsl?.value?.replace("hsl", "")?.replace("(", "")?.replace(")", "")
+                    .let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "Hsv" -> color.hsv?.value?.replace("hsv", "")?.replace("(", "")?.replace(")", "")
+                    .let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "Name" -> color.name?.value.let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "Cmyk" -> color.cmyk?.value?.replace("cmyk", "")?.replace("(", "")?.replace(")", "")
+                    .let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
+                "XYZ" -> color.xyz?.value?.replace("XYZ", "")?.replace("(", "")?.replace(")", "")
+                    .let {
+                    if (it != null) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .weight(5f)
+                                .padding(start = padding),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color(parseColor(color.contrast?.value))
+                        )
+                    }
+                }
             }
         }
     }
