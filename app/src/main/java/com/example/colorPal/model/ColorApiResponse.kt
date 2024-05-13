@@ -7,13 +7,6 @@ enum class ColorRepresentation {
     HEX, RGB, HSL, HSV, CMYK, NAME
 }
 
-enum class Mode {
-    MONOCHROME, MONOCHROME_DARK,
-    MONOCHROME_LIGHT, COMPLEMENT,
-    ANALOGIC, ANALOGIC_COMPLEMENT,
-    TRIAD, QUAD
-}
-
 @Serializable
 data class ColorApiResponse(
     val mode: String?,
