@@ -51,6 +51,8 @@ fun SettingScreen() {
                 .padding(paddingValues)
                 .padding(start = padding, end = padding)
         ) {
+            GeneralCard(context)
+            Spacer(modifier = Modifier.height(padding))
             GeneratorCard(context)
             Spacer(modifier = Modifier.height(padding))
             AboutCard()
@@ -82,6 +84,61 @@ fun AboutCard() {
             }
         }
     }
+}
+
+@Composable
+fun GeneralCard(context: Context) {
+    val sharedPreference = context.getSharedPreferences("my_app_prefs", Context.MODE_PRIVATE)
+    var showSheet by remember { mutableStateOf(false) }
+
+    Column {
+        Text(
+            text = "General", modifier = Modifier.padding(bottom = 8.dp), fontSize = 16.sp
+        )
+
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { showSheet = true }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Theme", fontWeight = FontWeight.Bold)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    sharedPreference.getString("theme", null)?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = LocalContentColor.current.copy(alpha = .6f)
+                    )
+                }
+            }
+        }
+    }
+
+    val content = listOf(
+        BottomSheetModel(text = "Auto (Light/Dark)"),
+        BottomSheetModel(text = "Light"),
+        BottomSheetModel(text = "Dark")
+    )
+
+    if (showSheet)
+        BottomSheet(items = content, onItemClick = { _, value ->
+            if (value != null) {
+                saveDataLocally(value, sharedPreference, "theme")
+            }
+            showSheet = false
+        }, onDismissSheet = { showSheet = false })
 }
 
 @Composable
